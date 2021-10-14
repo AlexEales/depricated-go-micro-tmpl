@@ -1,0 +1,9 @@
+# Go mod vendor
+/vendor
+
+# Generated proto-go files
+*.pb.go
+*.pb.gw.go
+
+# Generated binaries used for deployments
+*.bin
