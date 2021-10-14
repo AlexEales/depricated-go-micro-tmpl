@@ -100,12 +100,14 @@ install_helm () {
 }
 
 if ! command -v helm &> /dev/null; then
-    echo "Helm not installed, do you want me to install it (required)? [y/n]" yn
-    case $yn in
+    while true; do
+        read -p "Helm not installed, do you want me to install it (required)? [y/n]" yn
+        case $yn in
             [Yy]* ) install_helm; break;;
             [Nn]* ) echo "Skipped installing helm (not advised)"; break;;
             * ) echo "Please answer yes or no.";;
         esac
+    done
 else
     echo "Helm already installed, skipping"
 fi
@@ -119,13 +121,33 @@ install_minikube () {
     echo "Minikube installed"
 }
 
-if ! command -v helm &> /dev/null; then
-    echo "Minikube not installed, do you want me to install it (required)? [y/n]" yn
-    case $yn in
+if ! command -v minikube &> /dev/null; then
+    while true; do
+        read -p "Minikube not installed, do you want me to install it (required)? [y/n]" yn
+        case $yn in
             [Yy]* ) install_minikube; break;;
             [Nn]* ) echo "Skipped installing minikube, please install manually or some other local k8s cluser"; break;;
             * ) echo "Please answer yes or no.";;
         esac
+    done
 else
     echo "Minikube already installed, skipping"
+fi
+
+# K9s
+install_k9s () {
+    curl -sS https://webinstall.dev/k9s | bash
+}
+
+if ! command -v k9s &> /dev/null; then
+    while true; do
+        read -p "K9s not installed, do you want me to install it (recommended)? [y/n]" yn
+        case $yn in
+            [Yy]* ) install_k9s; break;;
+            [Nn]* ) echo "Skipped installing k9s"; break;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+else
+    echo "K9s already installed, skipping"
 fi
