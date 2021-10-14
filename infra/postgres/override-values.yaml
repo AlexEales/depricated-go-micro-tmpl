@@ -1,0 +1,4 @@
+fullnameOverride: postgres
+postgresqlDatabase: db
+replication:
+  enabled: true
