@@ -1,3 +1,4 @@
+# Customise using fields specified in https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
 fullnameOverride: postgres
 postgresqlDatabase: db
 replication:

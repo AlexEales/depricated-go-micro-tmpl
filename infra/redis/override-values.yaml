@@ -1,1 +1,2 @@
+# Customise using fields specified in https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
 fullnameOverride: redis
