@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -13,21 +14,30 @@ import (
 	"k8s.io/client-go/util/homedir"
 )
 
-var log = logrus.New()
+type Command func() error
 
-func main() {
+var (
+	commandMap = map[string]Command{
+		"install":   install,
+		"uninstall": uninstall,
+	}
+	// TODO: not a fan of the logrus formatting should make a common lib with a common format
+	log = logrus.New()
+)
+
+func install() error {
 	helmClient, err := helm.NewClient()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	config, err := clientcmd.BuildConfigFromFlags("", filepath.Join(homedir.HomeDir(), ".kube", "config"))
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
 	k8sClient := k8s.NewClient(clientset)
 
@@ -35,7 +45,7 @@ func main() {
 		"bitnami":   "https://charts.bitnami.com/bitnami",
 		"hashicorp": "https://helm.releases.hashicorp.com",
 	}); err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	if err := helmClient.InstallCharts(map[string]*helm.Chart{
@@ -44,12 +54,51 @@ func main() {
 			OverridesFile: "infra/postgres/override-values.yaml",
 		},
 	}); err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	if err := k8sClient.WaitForPodsToBeReady(context.TODO(), "default", []string{"postgres-primary-0", "postgres-read-0"}, time.Minute); err != nil {
-		log.Panic(err)
+		return err
 	}
 
 	log.Infoln("Installed!")
+	return nil
+}
+
+func uninstall() error {
+	helmClient, err := helm.NewClient()
+	if err != nil {
+		return err
+	}
+
+	charts, err := helmClient.ListCharts()
+	if err != nil {
+		return err
+	}
+
+	for _, chart := range charts {
+		if err := helmClient.UninstallChart(chart); err != nil {
+			return err
+		}
+		log.Infof("uninstalled chart %s", chart)
+	}
+
+	return nil
+}
+
+func main() {
+	args := os.Args[1:]
+
+	if len(args) == 0 {
+		log.Panic("no arguments provided")
+	}
+
+	cmd, ok := commandMap[args[0]]
+	if !ok {
+		log.Panicf("command <%s> not known", args[0])
+	}
+
+	if err := cmd(); err != nil {
+		log.Panic(err)
+	}
 }
