@@ -9,8 +9,6 @@ import (
 	"github.com/AlexEales/go-micro-tmpl/tools/heph/helm"
 	"github.com/AlexEales/go-micro-tmpl/tools/heph/k8s"
 	"github.com/sirupsen/logrus"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 )
 
@@ -31,15 +29,10 @@ func install() error {
 		return err
 	}
 
-	config, err := clientcmd.BuildConfigFromFlags("", filepath.Join(homedir.HomeDir(), ".kube", "config"))
+	k8sClient, err := k8s.NewClient(filepath.Join(homedir.HomeDir(), ".kube", "config"))
 	if err != nil {
 		return err
 	}
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return err
-	}
-	k8sClient := k8s.NewClient(clientset)
 
 	if err := helmClient.AddRepositories(map[string]string{
 		"bitnami":   "https://charts.bitnami.com/bitnami",

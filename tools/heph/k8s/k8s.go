@@ -10,6 +10,8 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 // Client defines a interface to interact with kubernetes resources
@@ -20,11 +22,38 @@ type Client interface {
 }
 
 // TODO: The creation of the clientset should probably be done in here
-// NewClient creates a new k8s client from the provided kubernetes clientset
-func NewClient(client *kubernetes.Clientset) Client {
-	return &k8sClient{
-		CoreV1Interface: client.CoreV1(),
+// NewClient creates a new k8s client using the kube config at the provided location
+func NewClient(kubeconfig string) (Client, error) {
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	if err != nil {
+		return nil, err
 	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &k8sClient{
+		CoreV1Interface: clientset.CoreV1(),
+	}, nil
+}
+
+// NewInClusterClient creates a new k8s client with a in-cluster configuration and context
+func NewInClusterClient() (Client, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &k8sClient{
+		CoreV1Interface: clientset.CoreV1(),
+	}, nil
 }
 
 type k8sClient struct {
