@@ -7,7 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var log = logrus.New()
+var (
+	// TODO: not a fan of the logrus formatting should make a common lib with a common format
+	log = logrus.New()
+)
 
 var rootCmd = &cobra.Command{
 	Use:   "heph",
@@ -15,6 +18,10 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	log.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
+
 	rootCmd.AddCommand(deployCmd, installCmd, uninstallCmd)
 }
 

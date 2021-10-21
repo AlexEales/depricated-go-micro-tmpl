@@ -38,7 +38,6 @@ func uninstall() error {
 		if err := helmClient.UninstallChart(chart); err != nil {
 			return err
 		}
-		log.Infof("uninstalled chart %s", chart)
 	}
 
 	log.Infoln("uninstalling all k8s resources")

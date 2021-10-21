@@ -48,17 +48,32 @@ func install() error {
 	}
 
 	if err := helmClient.InstallCharts(map[string]*helm.Chart{
+		"kafka": {
+			Name:          "bitnami/kafka",
+			OverridesFile: "infra/kafka/override-values.yaml",
+		},
 		"postgres": {
 			Name:          "bitnami/postgresql",
 			OverridesFile: "infra/postgres/override-values.yaml",
+		},
+		"redis": {
+			Name:          "bitnami/redis",
+			OverridesFile: "infra/redis/override-values.yaml",
+		},
+		"vault": {
+			Name:          "hashicorp/vault",
+			OverridesFile: "infra/vault/override-values.yaml",
 		},
 	}); err != nil {
 		return err
 	}
 
 	pods := []string{
+		"kafka-0",
+		"kafka-zookeeper-0",
 		"postgres-primary-0",
 		"postgres-read-0",
+		"redis-master-0",
 	}
 	log.Infof("Waiting for pods to be ready: {%s}", strings.Join(pods, ", "))
 	if err := k8sClient.WaitForPodsToBeReady(context.TODO(), "default", pods, time.Minute); err != nil {
