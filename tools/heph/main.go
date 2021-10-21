@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/AlexEales/go-micro-tmpl/tools/heph/cmd"
 	"github.com/AlexEales/go-micro-tmpl/tools/heph/helm"
 	"github.com/AlexEales/go-micro-tmpl/tools/heph/k8s"
 	"github.com/sirupsen/logrus"
@@ -80,18 +80,5 @@ func uninstall() error {
 }
 
 func main() {
-	args := os.Args[1:]
-
-	if len(args) == 0 {
-		log.Panic("no arguments provided")
-	}
-
-	cmd, ok := commandMap[args[0]]
-	if !ok {
-		log.Panicf("command <%s> not known", args[0])
-	}
-
-	if err := cmd(); err != nil {
-		log.Panic(err)
-	}
+	cmd.Execute()
 }
