@@ -45,6 +45,11 @@ func uninstall() error {
 		return err
 	}
 
+	log.Infoln("deleting persistent volumes")
+	if err := exec.Command("kubectl", "delete", "pvc", "--all").Run(); err != nil {
+		return err
+	}
+
 	log.Infoln("cleared local cluster")
 	return nil
 }

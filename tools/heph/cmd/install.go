@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -81,6 +80,6 @@ func install() error {
 	}
 
 	elapsed := time.Since(startTime)
-	log.Infof("installed successfully in %.2gm%.2gs", math.Round(elapsed.Minutes()), math.Round(elapsed.Seconds()))
+	log.Infof("installed successfully in %s", elapsed)
 	return nil
 }
