@@ -21,7 +21,6 @@ type Client interface {
 	WaitForPodsToBeReady(context.Context, string, []string, time.Duration) error
 }
 
-// TODO: The creation of the clientset should probably be done in here
 // NewClient creates a new k8s client using the kube config at the provided location
 func NewClient(kubeconfig string) (Client, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)

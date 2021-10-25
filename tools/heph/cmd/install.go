@@ -29,12 +29,34 @@ var installCmd = &cobra.Command{
 func install() error {
 	startTime := time.Now()
 
-	helmClient, err := helm.NewClient()
-	if err != nil {
+	if err := installHelmCharts(); err != nil {
 		return err
 	}
 
 	k8sClient, err := k8s.NewClient(filepath.Join(homedir.HomeDir(), ".kube", "config"))
+	if err != nil {
+		return err
+	}
+
+	pods := []string{
+		"kafka-0",
+		"kafka-zookeeper-0",
+		"postgres-primary-0",
+		"postgres-read-0",
+		"redis-master-0",
+	}
+	log.Infof("Waiting for pods to be ready: {%s}", strings.Join(pods, ", "))
+	if err := k8sClient.WaitForPodsToBeReady(context.TODO(), "default", pods, time.Minute); err != nil {
+		return err
+	}
+
+	elapsed := time.Since(startTime)
+	log.Infof("installed successfully in %s", elapsed)
+	return nil
+}
+
+func installHelmCharts() error {
+	helmClient, err := helm.NewClient()
 	if err != nil {
 		return err
 	}
@@ -67,19 +89,5 @@ func install() error {
 		return err
 	}
 
-	pods := []string{
-		"kafka-0",
-		"kafka-zookeeper-0",
-		"postgres-primary-0",
-		"postgres-read-0",
-		"redis-master-0",
-	}
-	log.Infof("Waiting for pods to be ready: {%s}", strings.Join(pods, ", "))
-	if err := k8sClient.WaitForPodsToBeReady(context.TODO(), "default", pods, time.Minute); err != nil {
-		return err
-	}
-
-	elapsed := time.Since(startTime)
-	log.Infof("installed successfully in %s", elapsed)
 	return nil
 }
