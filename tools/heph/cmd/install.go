@@ -4,12 +4,12 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/AlexEales/go-micro-tmpl/tools/heph/helm"
 	"github.com/AlexEales/go-micro-tmpl/tools/heph/k8s"
 	"github.com/spf13/cobra"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/util/homedir"
 )
 
@@ -45,8 +45,11 @@ func install() error {
 		"postgres-read-0",
 		"redis-master-0",
 	}
-	log.Infof("Waiting for pods to be ready: {%s}", strings.Join(pods, ", "))
-	if err := k8sClient.WaitForPodsToBeReady(context.TODO(), "default", pods, time.Minute); err != nil {
+	err = k8sClient.WaitFor().
+		PodsToFulfillCondition("default", pods, v1.PodReady).
+		PodPhase("default", "vault-0", v1.PodRunning).
+		Wait(context.TODO())
+	if err != nil {
 		return err
 	}
 
