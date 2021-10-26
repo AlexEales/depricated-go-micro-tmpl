@@ -53,6 +53,10 @@ func install() error {
 		return err
 	}
 
+	// Deploy init-jobs and wait for completion
+
+	// Deploy services
+
 	elapsed := time.Since(startTime)
 	log.Infof("installed successfully in %s", elapsed)
 	return nil
