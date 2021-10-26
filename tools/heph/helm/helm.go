@@ -12,6 +12,7 @@ import (
 // TODO: Would be good to test this but would rely on being able to either:
 // 		 - mock the exec.Command calls
 // 		 - have a mock helm binary run in place of normal helm
+// 		 - run a test in a docker container with helm installed (overkill)
 
 var log = logrus.New()
 

@@ -30,7 +30,7 @@ func NewClient(kubeconfig string) (Client, error) {
 	}, nil
 }
 
-// NewInClusterClient creates a new k8s client with a in-cluster configuration and context
+// NewInClusterClient creates a new k8s client with a in-cluster configuration
 func NewInClusterClient() (Client, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {

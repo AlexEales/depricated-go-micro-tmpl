@@ -35,9 +35,10 @@ func deploy(dir string) error {
 	if err := exec.Command("go", "build", "-o", outputPath, inputPath).Run(); err != nil {
 		return err
 	}
-	log.Infof("build service binary %s", outputPath)
+	log.Infof("built service binary %s", outputPath)
 
 	sourcePath := fmt.Sprintf("./%s/docker", dir)
+        // TODO: Add this as some kind of global variable so we can avoid find-replace
 	tagName := fmt.Sprintf("go-micro-tmpl/%s", path.Base(dir))
 	if err := exec.Command("docker", "build", "-t", tagName, sourcePath).Run(); err != nil {
 		return err
