@@ -38,6 +38,7 @@ func main() {
 		log.WithError(err).Panicln("error initializing vault")
 	}
 
+	// FIXME: this shouldn't be logged in the future these should be put in a secret or somewhere safe to be retrieved and stored securely
 	log.WithFields(logrus.Fields{
 		"keys":          initResponse.Keys,
 		"recovery_keys": initResponse.RecoveryKeys,
