@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-init
+spec:
+  ttlSecondsAfterFinished: 100
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+      - name: main
+        image: go-micro-tmpl/vault-init
+        imagePullPolicy: Never
+      restartPolicy: Never
