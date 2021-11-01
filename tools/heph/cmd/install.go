@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/AlexEales/go-micro-tmpl/common/go/k8s"
 	"github.com/AlexEales/go-micro-tmpl/tools/heph/helm"
-	"github.com/AlexEales/go-micro-tmpl/tools/heph/k8s"
 	"github.com/spf13/cobra"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/util/homedir"
